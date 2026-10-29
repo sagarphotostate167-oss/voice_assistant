@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="voice_assistant.Systray">
+        <div class="o_voice_assistant">
+            <button class="o_va_toggle btn" t-on-click="toggle" title="Voice Assistant">
+                <i class="fa fa-microphone" t-att-class="{'text-danger': state.listening}"/>
+            </button>
+            <div t-if="state.open" class="o_va_panel shadow">
+                <div class="o_va_header">
+                    <b>Voice Assistant</b>
+                    <button class="btn btn-sm" t-on-click="toggle"><i class="fa fa-times"/></button>
+                </div>
+                <div class="o_va_messages" t-ref="messages">
+                    <t t-foreach="state.messages" t-as="m" t-key="m_index">
+                        <div t-attf-class="o_va_msg o_va_{{m.role}}">
+                            <div t-esc="m.text"/>
+                            <ul t-if="m.rows and m.rows.length">
+                                <li t-foreach="m.rows" t-as="r" t-key="r_index" t-esc="r"/>
+                            </ul>
+                        </div>
+                    </t>
+                    <div t-if="state.busy" class="o_va_msg o_va_bot">...</div>
+                </div>
+                <div t-if="state.pending" class="o_va_confirm">
+                    <button class="btn btn-primary btn-sm" t-on-click="() => this.confirm(true)">Yes, create</button>
+                    <button class="btn btn-secondary btn-sm" t-on-click="() => this.confirm(false)">Cancel</button>
+                </div>
+                <div class="o_va_transcript" t-if="state.listening">
+                    Listening... <span t-esc="state.transcript"/>
+                </div>
+                <div class="o_va_footer">
+                    <input class="form-control" placeholder="Or type a command..."
+                           t-model="state.typed" t-on-keydown="onKey"/>
+                    <button class="btn btn-primary o_va_mic" t-att-disabled="!supported"
+                            t-on-click="startListening" title="Speak">
+                        <i class="fa fa-microphone"/>
+                    </button>
+                </div>
+                <div t-if="!supported" class="o_va_note">
+                    Voice input needs Chrome or Edge (HTTPS). Typing still works.
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
